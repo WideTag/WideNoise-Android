@@ -43,8 +43,8 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
 public class WTMapActivity extends MapActivity {
-	// private static final String MAP_KEY = "###MAPS-DEBUG-SECRET-KEY-HERE###"; // DEBUG
-	private static final String MAP_KEY = "###MAPS-RELEASE-SECRET-KEY-HERE###";  // RELEASE
+	private static final String MAP_KEY = "###MAPS-DEBUG-SECRET-KEY-HERE###"; // DEBUG
+	//private static final String MAP_KEY = "###MAPS-RELEASE-SECRET-KEY-HERE###";  // RELEASE
 	
 	
 	static float locationAccuracy = 1000.0f;

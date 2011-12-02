@@ -9,10 +9,18 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.conf.*;
 
 public class WTWideNoiseActivity extends TabActivity {
     /** Called when the activity is first created. */
-    @Override
+    
+	private Twitter twitter;
+	
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -47,6 +55,18 @@ public class WTWideNoiseActivity extends TabActivity {
         tabHost.addTab(spec);
         
         tabHost.setCurrentTab(0);
+        
 
+		/*
+		System.out.println("Access Token " +token );       
+        String name = token.getScreenName();      
+        System.out.println("Screen Name" +name);       
+        System.out.println(token); 
+	*/
     }
-}
+    
+    public Twitter getTwitter()
+    {
+    	 return twitter;
+    }
+} 

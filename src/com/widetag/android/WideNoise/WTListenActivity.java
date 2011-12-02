@@ -1,9 +1,14 @@
 package com.widetag.android.WideNoise;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -16,10 +21,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.facebook.android.Facebook;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
@@ -43,18 +51,29 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 
+import twitter4j.AsyncTwitter;
+import twitter4j.StatusUpdate;
+import twitter4j.Twitter;
+
 public class WTListenActivity extends Activity implements WTLedViewDataSource, WTNoiseRecordDelegate, WTTagsViewControllerDelegate
 {
-	static int innerFlipRToLDuration = 450;
-	static int innerFlipLToRDuration = 450;
+	final static int innerFlipRToLDuration = 450;
+	final static int innerFlipLToRDuration = 450;
 	
-	static int mainFlipRToLDuration = 550;
-	static int mainFlipLToRDuration = 550;
+	final static int mainFlipRToLDuration = 550;
+	final static int mainFlipLToRDuration = 550;
 	
 	
-	static int record_duration = 5;
+	final static int record_duration = 5;
 	
-	static float locationAccuracy = 1000.0f;
+	final static float locationAccuracy = 1000.0f;
+	
+	final static String SOCIAL_URL = "http://widenoise.com/%s";
+	final static String SOCIAL_MSG = "just read %.1fdB of %s with #WideNoise3";
+	
+	final static String STORED_TAGS_FILE_NAME = "UserTags";
+	
+	final static int REQUEST_TAG = 3;
 	
 	private int page = 0;
 	
@@ -116,6 +135,7 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 	}
 	
 	
+	
 	private static int natural_pos = 0, artificial_pos = 1, lovable_pos = 2, hurting_pos = 3, indoor_pos = 4, outdoor_pos = 5, single_pos = 6, multiple_pos = 7; 
 	
 	
@@ -130,6 +150,7 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		}
 	}; // it's a variable definition!
 	
+	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
@@ -205,14 +226,14 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 				
 			}
 
-			public void onStartTrackingTouch(SeekBar seekBar) {
+			public void onStartTrackingTouch(SeekBar seekBar) 
+			{
 				// TODO Auto-generated method stub
-				
 			}
 
-			public void onStopTrackingTouch(SeekBar seekBar) {
+			public void onStopTrackingTouch(SeekBar seekBar) 
+			{
 				// TODO Auto-generated method stub
-				
 			}
 		
 		});
@@ -224,6 +245,23 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		
 		setPage(0);
 		
+	}
+	
+	@Override
+	public void onResume()
+	{
+		
+		WTSocialNetworkManager snm = WTSocialNetworkManager.getInstance();
+		
+		if ( snm.isTwitterAuthorized() )
+		{	
+			shareResult.setEnabled(true);
+		}
+		else
+		{
+			shareResult.setEnabled(false);
+		}
+		super.onResume();
 	}
 	
 	
@@ -358,7 +396,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 	
 	public void take_noise_sample_callback( View view)
 	{
-		
 		takeNoiseButton.setEnabled(false);
 		ViewFlipper vf = (ViewFlipper) findViewById(R.id.inner_listen_view_flipper);
 		flipToNextView(vf);
@@ -374,58 +411,66 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		lmCriteria.setSpeedRequired(false);
 
 		String bestProvider = locationManager.getBestProvider(lmCriteria, true);
-		if (bestProvider == null) {
+		if (bestProvider == null) 
+		{
 			lmCriteria.setAccuracy(Criteria.ACCURACY_COARSE);
 			bestProvider = (bestProvider != null) ? bestProvider
 					: locationManager.getBestProvider(lmCriteria, true);
 		}
-		if (bestProvider != null) {
+		if (bestProvider != null) 
+		{
 			Location lastLocation = locationManager
 					.getLastKnownLocation(bestProvider);
-			if (lastLocation != null) {
+			if (lastLocation != null) 
+			{
 				currentLocation.setLatitude(lastLocation.getLatitude());
 				currentLocation.setLongitude(lastLocation.getLongitude());
 			}
 
-			// FARE RICHIESTA SINCRONA
-			locationManager.requestLocationUpdates(bestProvider, 1000L,
-					locationAccuracy, new LocationListener() {
 
-						public void onLocationChanged(Location location) {
-							if (location != null) {
-								// SE LA PRECISIONE è TRA 0 E 100 AGGIORNA
-								WTListenActivity.this.currentLocation
-										.setLatitude(location.getLatitude());
-								WTListenActivity.this.currentLocation
-										.setLongitude(location.getLongitude());
-								WTListenActivity.this.locationManager
-										.removeUpdates(this);
-							}
-						}
+			locationManager.requestLocationUpdates(bestProvider, 1000L,locationAccuracy, new LocationListener() 
+			{
+				public void onLocationChanged(Location location) 
+				{
+					if (location != null) 
+					{
+						// SE LA PRECISIONE è TRA 0 E 100 AGGIORNA
+						WTListenActivity.this.currentLocation
+								.setLatitude(location.getLatitude());
+						WTListenActivity.this.currentLocation
+								.setLongitude(location.getLongitude());
+						WTListenActivity.this.locationManager
+								.removeUpdates(this);
+					}
+				}
 
-						public void onProviderDisabled(String provider) {
-							WTListenActivity.this.currentLocation
-									.setLatitude(0.0);
-							WTListenActivity.this.currentLocation
-									.setLongitude(0.0);
-							WTListenActivity.this.locationManager
-									.removeUpdates(this);
-							showLocationAlert();
-						}
+				public void onProviderDisabled(String provider) 
+				{
+					WTListenActivity.this.currentLocation
+							.setLatitude(0.0);
+					WTListenActivity.this.currentLocation
+							.setLongitude(0.0);
+					WTListenActivity.this.locationManager
+							.removeUpdates(this);
+					showLocationAlert();
+				}
 
-						public void onProviderEnabled(String provider) {
-							// TODO Auto-generated method stub
+				public void onProviderEnabled(String provider) 
+				{
+					// TODO Auto-generated method stub
+				}
 
-						}
+				public void onStatusChanged(String provider,
+						int status, Bundle extras) 
+				{
+					// TODO Auto-generated method stub
 
-						public void onStatusChanged(String provider,
-								int status, Bundle extras) {
-							// TODO Auto-generated method stub
+				}
 
-						}
-
-					});
-		} else {
+			});
+		} 
+		else 
+		{
 			showLocationAlert();
 		}
 	}
@@ -433,6 +478,7 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 	public void extend_sampling_callback( View view)
 	{
 		extendButton.setEnabled(false);
+		noiseRecorder.recordForDuration(record_duration);
 	}
 	
 	public void restart_callback(View view)
@@ -465,7 +511,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		String line = null;
 		try 
 		{
-
 			while ((line = reader.readLine()) != null) 
 			{
 				sb.append(line + "\n");
@@ -490,12 +535,12 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		return sb.toString();
 	}
 	
-	protected void handleConnectionError()
+	protected void handleConnectionError(String msg)
 	{
 		statusScreen.setBackgroundResource(R.drawable.status_screen);
 		new AlertDialog.Builder(WTListenActivity.this)
 			.setCancelable(false)
-			.setMessage("Error sending report.")
+			.setMessage(msg)
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() 
 			{  
 			    public void onClick(android.content.DialogInterface dialog, int arg1) 
@@ -583,6 +628,10 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 				{
 					public void run() {
 						statusScreen.setBackgroundResource(R.drawable.status_screen_done);
+
+						takeNewSample.setEnabled(true);
+						shareResult.setEnabled(true);
+						addTag.setEnabled(true);
 				}});
 			}
 
@@ -592,16 +641,17 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 				{
 					public void run() {
 						statusScreen.setBackgroundResource(R.drawable.status_screen);
-						handleConnectionError();
+						handleConnectionError("Error sending report");
+
+						takeNewSample.setEnabled(true);
+						shareResult.setEnabled(false);
+						addTag.setEnabled(false);  // PER DEBUGGARE!! RIMETTERE A FALSE!!
 				}});
 			}
 		}
 		
 		SendingReportAsyncTask srat = new SendingReportAsyncTask();
 		srat.execute(this);
-		takeNewSample.setEnabled(true);
-		noiseRecorder.clear();
-
 	}
 	
 	public void change_prediction_callback(View view)
@@ -619,16 +669,148 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 	{
 		Button but = (Button)view;
 		but.setEnabled(false);
+
+		Intent intent = new Intent(this, WTTagActivity.class);
+		WTListenActivity.this.startActivityForResult(intent, REQUEST_TAG);  // change into startActivityForResult
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) 
+	{
+		if (requestCode == REQUEST_TAG) 
+		{
+			if (resultCode == RESULT_OK) 
+			{
+				final ArrayList<String> selectedTags = WTTagsManager.getInstance(this).getSelectedTags();
+				if (selectedTags.isEmpty())
+				{
+					addTag.setEnabled(true);
+				}
+				else
+				{
+					final boolean shareIsEnabled = shareResult.isEnabled();
+					final WTNoise recordedNoise = noiseRecorder.getRecordedNoise();
+					
+					class TagAsyncTask extends AsyncTask<WTListenActivity, Void, Void>
+					{
+
+						@Override
+						protected Void doInBackground(WTListenActivity... self) 
+						{
+							WTListenActivity activity = self[0];
+							try 
+							{
+								WTReferenceRequestFactory requestFactory = new WTReferenceRequestFactory(activity);
+								Calendar rightNow = Calendar.getInstance();
+								Date currentDate = rightNow.getTime();
+								HttpPost httpPost = requestFactory.requestForAssigningTags(selectedTags, noiseRecorder.getRecordedNoise(), currentDate);
+				
+								DefaultHttpClient httpclient = new DefaultHttpClient();
+								HttpResponse response = httpclient.execute(httpPost); 
+								if (response.getStatusLine().getStatusCode() == 404)
+								{
+									sendError(activity);
+								}
+								else
+								{
+									sendOk(activity);
+								}
+							} 
+							catch (ClientProtocolException e) 
+							{
+								sendError(activity);
+							} 
+							catch (IOException e) 
+							{
+								sendError(activity);
+							}
+							
+							return null;
+						}
+						
+						private void sendOk(Activity activity) 
+						{
+							activity.runOnUiThread(new Runnable() 
+							{
+								public void run() {
+									statusScreen.setBackgroundResource(R.drawable.status_screen_done);
+									takeNewSample.setEnabled(true);
+									shareResult.setEnabled(shareIsEnabled);
+									addTag.setEnabled(false);
+							}});
+						}
+
+						private void sendError(Activity activity) 
+						{
+							activity.runOnUiThread(new Runnable() 
+							{
+								public void run() {
+									statusScreen.setBackgroundResource(R.drawable.status_screen);
+									handleConnectionError("Error sending tags");
+									shareResult.setEnabled(shareIsEnabled);
+									takeNewSample.setEnabled(true);
+									addTag.setEnabled(true);
+							}});
+						}
+					}
+					statusScreen.setBackgroundResource(R.drawable.status_screen_sending);
+					TagAsyncTask srat = new TagAsyncTask();
+					srat.execute(this);
+				}
+			}
+		}
 	}
 	
 	public void share_result_callback(View view)
 	{
 		Button but = (Button)view;
 		but.setEnabled(false);
+
+		WTSocialNetworkManager snm = WTSocialNetworkManager.getInstance();
+		boolean twitterOk = snm.isTwitterAuthorized();
+		boolean facebookOk = false; // SocialNetworkManager.getInstance().isfacebookAuthorized();
+		if ( twitterOk || facebookOk )
+		{
+			WTNoise recordedNoise = noiseRecorder.getRecordedNoise();
+			String link = String.format(SOCIAL_URL, recordedNoise.getID());
+			String description = String.format(SOCIAL_MSG, recordedNoise.getAverageLevelInDB(), recordedNoise.getDescription());
+			if (twitterOk)
+			{
+				String updateString = String.format("%s %s",description, link);
+				snm.updateTwitterStatus(updateString);
+			}
+			Facebook facebook = snm.getFacebook();
+			if (facebook.isSessionValid())
+			{
+				//String response = facebook.request("me/feed");
+				Bundle parameters = new Bundle();
+				parameters.putString("link", link);
+				parameters.putString("description", description);
+				try 
+				{
+					String response = facebook.request("me/feed", parameters, "POST");
+				} 
+				catch (FileNotFoundException e) 
+				{
+					e.printStackTrace();
+				} catch (MalformedURLException e) 
+				{
+					e.printStackTrace();
+				} catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		else
+		{
+			handleConnectionError("Please log in to one or more social networks first");
+		}
 	}
 	
 	public void take_new_sample_callback(View view)
 	{
+		noiseRecorder.clear();
 		Button but = (Button)view;
 		but.setEnabled(false);
 		
@@ -640,6 +822,7 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		setPage(0);
 
 	}
+	
 	////////////////////////////////////////////////////////////////////
 	
 	//   Animation functions
@@ -706,6 +889,7 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 			locImage.setVisibility(View.VISIBLE);
 			guessTextImage.setVisibility(View.VISIBLE);
 			matchTextImage.setVisibility(View.GONE);
+			// Start recording
 			noiseRecorder.recordForDuration(record_duration);
 		}
 
@@ -729,16 +913,7 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 
 		public void onAnimationEnd(Animation animation) 
 		{
-//			WTListenActivity.this.runOnUiThread(new Runnable() 
-//			{
-//				public void run() 
-//				{
-
-//					
-//				}
-//			});
-//					
-	
+		
 		}
 		public void onAnimationRepeat(Animation arg0) {
 			// TODO Auto-generated method stub
@@ -875,8 +1050,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		flipToNextView(vf);
 		setPage(2);
 		
-		
-		
 		final float db = recordedNoise.getAverageLevelInDB();
 		String description = new String();
 		 
@@ -928,7 +1101,10 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		}
 	}
 	
+	protected void shareToSocialNetworks()
+	{
 
+	}
 	
 	
 }

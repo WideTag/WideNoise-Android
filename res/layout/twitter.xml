@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical" >
+	<RelativeLayout 
+	    android:id="@+id/twitter_button_background"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true" 
+	    android:background="#000000"
+	    android:layout_marginTop="10dp"
+	    android:paddingBottom="10dp"
+	    android:paddingTop="10dp">
+	    <Button
+	        android:id="@+id/twitter_cancel_button"
+	        android:layout_width="70dp"
+	        android:layout_height="wrap_content"
+	        android:text="Cancel" 
+	        android:layout_alignParentLeft="true"
+	        android:onClick="cancel_button_callback"
+	        android:layout_marginLeft="5dp"
+	        />
+	    <TextView 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textColor="#FFFFFF"
+	        android:text="Twitter Account"
+	        android:textStyle="bold"
+	        android:textSize="20sp"
+	        android:layout_centerHorizontal="true"
+	        android:layout_centerVertical="true"
+	        />	    <Button
+	        android:id="@+id/twitter_login_button"
+	        android:layout_width="70dp"
+	        android:layout_height="wrap_content"
+	        android:text="Login" 
+			android:layout_alignParentRight="true"
+			android:onClick="login_button_callback"	
+			
+	        android:layout_marginRight="5dp"/>
+	</RelativeLayout>
+	<TextView
+	    android:id="@+id/username_label"
+	    android:layout_width="fill_parent"
+	    android:layout_height="14dp"
+	    android:layout_marginLeft="5dp"
+	    android:layout_marginTop="5dp"
+	    android:text="User Name"
+	    android:textColor="#FFFFFF"
+	    android:textSize="10sp"
+	    android:layout_below="@id/twitter_button_background" />
+	<EditText 
+		android:id="@+id/twitter_username_text"
+		android:layout_width="fill_parent"
+		android:layout_height="50dp"
+		android:layout_below="@id/username_label"
+		android:layout_marginTop="5dp"
+		android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp" />
+	<TextView 
+	    android:id="@+id/password_label"
+	    android:layout_width="fill_parent"
+	    android:layout_height="14dp"
+	    android:layout_marginLeft="5dp"
+	    android:layout_marginTop="5dp"
+	    android:text="Password"
+	    android:textColor="#FFFFFF"
+	    android:textSize="10sp"
+	    android:layout_below="@id/twitter_username_text" />
+	<EditText
+	    android:id="@+id/twitter_password_text"
+	    android:layout_width="fill_parent"
+	    android:layout_height="50dp"
+	    android:layout_below="@id/password_label" 
+	    android:layout_marginTop="5dp"
+	    android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:password="true"
+        android:inputType="textPassword" />
+</RelativeLayout >

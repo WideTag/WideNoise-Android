@@ -42,9 +42,10 @@ import org.apache.http.HttpResponse;
 public class WTReferenceRequestFactory implements WTRequestFactory
 {
 	private Context context;
-	private final static String reportingUrl = "http://www.widetag.com/widenoise/v2/api/noise/";
-	private final static String mapUrl = "http://www.widetag.com/widenoise/v2/api/noise/";
-	private final static String key = "###API-SECRET-KEY-HERE###";
+	private final static String TAGS_URL = "http://www.widetag.com/widenoise/v2/api/noise/%s/tag/";
+	private final static String REPORTING_URL = "http://www.widetag.com/widenoise/v2/api/noise/";
+	private final static String MAP_URL = "http://www.widetag.com/widenoise/v2/api/noise/";
+	private final static String KEY = "###API-SECRET-KEY-HERE###";
 	private WTReferenceRequestFactory()
 	{
 		// cannot be called from outside
@@ -101,7 +102,7 @@ public class WTReferenceRequestFactory implements WTRequestFactory
 			
 			Mac mac = Mac.getInstance("HMACSHA256");
 
-			SecretKeySpec sk = new SecretKeySpec(key.getBytes(), "HMACSHA256");      
+			SecretKeySpec sk = new SecretKeySpec(KEY.getBytes(), "HMACSHA256");      
 			mac.init(sk);
 			String jsonString = jobj.toString();
 
@@ -117,57 +118,113 @@ public class WTReferenceRequestFactory implements WTRequestFactory
 		} 
 		catch (NoSuchAlgorithmException e) 
 		{
-			
 			e.printStackTrace();
 		} 
 		catch (InvalidKeyException e) 
 		{
-	
 			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
+		} 
+		catch (IllegalStateException e) 
+		{
 			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+		} 
+		catch (UnsupportedEncodingException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		HttpPost httpost = new HttpPost(REPORTING_URL);
+		
+		StringEntity se;
+		try 
+		{
+			String jsonString = jobj.toString();
+			jsonString = jsonString.replace("\\/", "/");
+			jsonString = jsonString.replace("\\n", "");
+			se = new StringEntity(jsonString);
+			httpost.setEntity(se);
+			httpost.setHeader("Accept", "application/json");
+			httpost.setHeader("Content-type", "application/json");
+		} 
+		catch (UnsupportedEncodingException e) 
+		{
 			e.printStackTrace();
 		}
 
-		
-		
-		
-			HttpPost httpost = new HttpPost(reportingUrl);
-			
-			StringEntity se;
-			try 
-			{
-				String jsonString = jobj.toString();
-				jsonString = jsonString.replace("\\/", "/");
-				jsonString = jsonString.replace("\\n", "");
-				se = new StringEntity(jsonString);
-				httpost.setEntity(se);
-				httpost.setHeader("Accept", "application/json");
-				httpost.setHeader("Content-type", "application/json");
-			} 
-			catch (UnsupportedEncodingException e) 
-			{
-				e.printStackTrace();
-			}
-
-			return httpost;
-			
-			
+		return httpost;
 		
 	}
 
 	public HttpGet requestForFetchingNoiseReportsInMapRect(float latitude, float longitude,float latitudeDelta, float longitudeDelta) 
 	{
-    	HttpGet request = new HttpGet(new Formatter(Locale.US).format("%s?lat=%f&lon=%f&lat_delta=%f&lon_delta=%f", mapUrl, latitude, longitude, latitudeDelta, longitudeDelta).toString());
+    	HttpGet request = new HttpGet(new Formatter(Locale.US).format("%s?lat=%f&lon=%f&lat_delta=%f&lon_delta=%f", MAP_URL, latitude, longitude, latitudeDelta, longitudeDelta).toString());
     	return request;  	
 	}
 
-	public HttpPost requestForAssigningTags(ArrayList tags, WTNoise noise) {
-		// TODO Auto-generated method stub
-		return null;
+	public HttpPost requestForAssigningTags(ArrayList<String> tags, WTNoise noise, Date date) 
+	{
+		TelephonyManager tm = (TelephonyManager)(context.getSystemService(Context.TELEPHONY_SERVICE));
+		String ID = tm.getDeviceId();
+		JSONObject jobj = new JSONObject();
+		try 
+		{
+			jobj.put("uid", ID);
+			jobj.put("tags", new JSONArray(tags) );
+			jobj.put("timestamp", new Formatter(Locale.US).format("%d", (date.getTime()/1000)).toString());
+			jobj.put("hash", "");
+			
+			Mac mac = Mac.getInstance("HMACSHA256");
+			SecretKeySpec sk = new SecretKeySpec(KEY.getBytes(), "HMACSHA256");      
+			mac.init(sk);
+			String jsonString = jobj.toString();
+			String resultStr = new String(Base64.encode(mac.doFinal(jsonString.getBytes("UTF-8")), Base64.DEFAULT));
+			
+			jobj.put("hash", resultStr);
+			
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (NoSuchAlgorithmException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (InvalidKeyException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (IllegalStateException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (UnsupportedEncodingException e) 
+		{
+			e.printStackTrace();
+		}
+
+		String url = String.format(TAGS_URL, noise.getID());
+		Log.w("TAG URL", url);
+		HttpPost httpost = new HttpPost(url);
+		
+		StringEntity se;
+		try 
+		{
+			String jsonString = jobj.toString();
+			jsonString = jsonString.replace("\\/", "/");
+			jsonString = jsonString.replace("\\n", "");
+			Log.w("TAG JSON", jsonString);
+			se = new StringEntity(jsonString);
+			httpost.setEntity(se);
+			httpost.setHeader("Accept", "application/json");
+			httpost.setHeader("Content-type", "application/json");
+		} 
+		catch (UnsupportedEncodingException e) 
+		{
+			e.printStackTrace();
+		}
+
+		return httpost;
 	}
 
 }

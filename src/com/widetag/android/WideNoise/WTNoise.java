@@ -139,7 +139,7 @@ public class WTNoise
 	
 	public String getDescription()
 	{
-		float avg = getAverageLevel();
+		float avg = getAverageLevelInDB();
 		String description = null;
 		if (avg <= 10)
 		{
@@ -232,6 +232,11 @@ public class WTNoise
 		identifier = newID;
 	}
 	
+	public void setAverageLevelInDB(float value) {
+		assert samples.isEmpty();
+		averageLevelInDB = value;
+	}
+	
 	//////////////////////////////////////////////////////
 	
 	
@@ -293,9 +298,9 @@ public class WTNoise
 		return perceptions;
 	}
 	
-	public void setAverageLevelInDB(float value) {
-		assert samples.isEmpty();
-		averageLevelInDB = value;
+	public String getID()
+	{
+		return identifier;
 	}
 }
 

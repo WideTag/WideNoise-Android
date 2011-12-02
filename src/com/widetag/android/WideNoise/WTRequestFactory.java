@@ -13,6 +13,6 @@ public interface WTRequestFactory {
 	
 	HttpGet requestForFetchingNoiseReportsInMapRect(float latitude, float longitude, float latitudeDelta, float longitudeDelta); 
 	
-	HttpPost requestForAssigningTags(ArrayList tags , WTNoise noise);
+	public HttpPost requestForAssigningTags(ArrayList<String> tags, WTNoise noise, Date date);
 	
 }

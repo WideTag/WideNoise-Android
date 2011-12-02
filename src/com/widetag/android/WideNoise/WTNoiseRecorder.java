@@ -129,7 +129,8 @@ public class WTNoiseRecorder
 		}
 		
 		
-		if (audioRecorder.getState() == AudioRecord.RECORDSTATE_STOPPED) // this is the first record
+		//if (audioRecorder.getState() == AudioRecord.RECORDSTATE_STOPPED) // this is the first record
+		if (listOfDuration == null)
 		{
 			lastAddedRecord = -1;
 			listOfDuration = new double[maxNumOfRecords];
@@ -155,10 +156,11 @@ public class WTNoiseRecorder
 							if (lastAddedRecord > addedRead)
 							{
 								double totalDuration = 0;
-								for (int i = 0; i < currentRecord; i++)
+								for (int i = 0; i < addedRead; i++)
 								{
 									totalDuration = WTNoiseRecorder.this.listOfDuration[i];
 								}
+								addedRead++;
 								audioRecorder.read(buffer,(int)(totalDuration * samplingRate),(int)(WTNoiseRecorder.this.listOfDuration[currentRecord] * samplingRate));
 							}
 						}
