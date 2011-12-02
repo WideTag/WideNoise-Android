@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" >
+
+        <ImageView
+            android:id="@+id/image1"
+            android:layout_width="282dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/share_text_1" />
+
+        <Button
+            android:id="@+id/link_twitter_button"
+            android:enabled="false"
+            android:layout_width="282dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/image1"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/link_twitter"
+            android:onClick="link_twitter_callback"
+            android:layout_marginBottom="5dp" />
+
+        <Button
+            android:id="@+id/link_facebook_button"
+            android:enabled="false"
+            android:layout_width="282dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/link_twitter_button"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/link_facebook"
+            android:onClick="link_facebook_callback" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="1" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" >
+
+        <ImageView
+            android:id="@+id/image2"
+            android:layout_width="282dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/share_text_2" />
+
+        <Button
+            android:id="@+id/email_widget_button"
+            android:enabled="false"
+            android:layout_width="282dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/image2"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/email_widget"
+            android:onClick="email_widget_callback" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="1" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" 
+        android:layout_marginBottom="5dp">
+
+        <ImageView
+            android:id="@+id/image3"
+            android:layout_width="282dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/share_text_3" />
+
+        <Button
+            android:id="@+id/open_personal_page_button"
+            android:enabled="false"
+            android:layout_width="282dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/image3"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/open_personal_page"
+            android:onClick="open_personal_page_callback" />
+    </RelativeLayout>
+
+</LinearLayout>

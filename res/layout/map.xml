@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"    
+	android:orientation="vertical"    
+	android:layout_width="fill_parent"    
+	android:layout_height="fill_parent" 
+	android:layout_marginTop="0dp"
+    android:layout_marginBottom="0dp"
+	android:layout_marginLeft="0dp"
+    android:layout_marginRight="0dp"
+	>   
+	<RelativeLayout 
+	    android:id="@+id/top_map_info_border"
+	    android:layout_width="fill_parent"
+	    android:layout_height="7dp"
+	    />
+	<RelativeLayout 
+	    android:id="@+id/map_container"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_weight="1"
+	    >
+		</RelativeLayout>
+	
+	<RelativeLayout 
+		android:id="@+id/bottom_map_info_border"    
+	    android:layout_width="fill_parent"
+	    android:layout_height="7dp"
+	/>
+   	<RelativeLayout 
+	    android:id="@+id/info_container"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="6dp"
+	    android:layout_marginBottom="6dp"
+	    android:gravity="center_vertical"
+	    >
+	    <ImageView
+	        android:src="@drawable/icon_1"
+	        android:id="@+id/map_info_noise_icon"
+	        android:layout_height="33dp" 
+	        android:layout_width="42dp"
+	        android:layout_marginRight="20dp"
+	        android:layout_marginLeft="20dp"
+	        />
+	    <TextView 
+	        android:id="@+id/fixed_text"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content"
+	        android:text="This is a "
+	        android:textSize="15sp"
+	        android:layout_toRightOf="@id/map_info_noise_icon"
+			android:layout_centerVertical="true"
+	        />
+	    <TextView 
+	        android:id="@+id/map_info_noise_description"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content"
+	        android:textStyle="bold"
+	        android:textSize="15sp"
+	        android:text="Feather"
+	        android:layout_toRightOf="@id/fixed_text"
+			android:layout_centerVertical="true"
+			/>
+	        
+	    <TextView 
+	        android:id="@+id/map_info_noise_area"
+	        android:layout_width="fill_parent" 
+	        android:layout_height="wrap_content"
+	        android:textStyle="bold"
+	        android:textSize="15sp"
+	        android:text=" area"
+	        android:layout_toRightOf="@+id/map_info_noise_description"
+			android:layout_centerVertical="true"
+	        />
+	        
+    	</RelativeLayout>
+	    
+</LinearLayout> 

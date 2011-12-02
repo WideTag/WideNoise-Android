@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="80dp"
+        android:layout_gravity="top"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/noise_meter"
+            android:layout_width="282dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/noise_meter_off" />
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/separator" />
+
+    <ViewFlipper
+        android:id="@+id/main_listen_view_flipper"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/noise_meter"
+        android:layout_weight="1" >
+
+        <!-- first page in main flip viewer -->
+
+        <LinearLayout
+            android:id="@+id/main_first_page_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/screen_container_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <RelativeLayout
+                    android:id="@+id/screen"
+                    android:layout_width="282dp"
+                    android:layout_height="120dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/screen" >
+
+                    <LinearLayout
+                        android:id="@+id/screen_dots"
+                        android:layout_width="268dp"
+                        android:layout_height="88dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/screen_dots"
+                        android:orientation="vertical" >
+
+                        <RelativeLayout
+                            android:id="@+id/screen_graph"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_centerHorizontal="true"
+                            android:layout_weight="1" />
+
+                        <RelativeLayout
+                            android:id="@+id/screen_bottom"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_centerHorizontal="true"
+                            android:layout_weight="1" >
+
+                            <ImageView
+                                android:id="@+id/guess_text"
+                                android:layout_width="208dp"
+                                android:layout_height="13dp"
+                                android:layout_above="@id/screen_dots"
+                                android:layout_centerHorizontal="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/guess_text" />
+
+                            <ImageView
+                                android:id="@+id/match"
+                                android:layout_width="69dp"
+                                android:layout_height="34dp"
+                                android:layout_above="@id/screen_dots"
+                                android:layout_centerHorizontal="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/no_match" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/stop"
+                        android:layout_width="7dp"
+                        android:layout_height="7dp"
+                        android:layout_above="@id/screen_dots"
+                        android:layout_alignLeft="@+id/screen_dots"
+                        android:layout_marginBottom="2dp"
+                        android:src="@drawable/stop" />
+
+                    <ImageView
+                        android:id="@+id/rec"
+                        android:layout_width="5dp"
+                        android:layout_height="7dp"
+                        android:layout_above="@id/screen_dots"
+                        android:layout_alignLeft="@+id/screen_dots"
+                        android:layout_marginBottom="2dp"
+                        android:src="@drawable/rec" />
+
+                    <ImageView
+                        android:id="@+id/loc"
+                        android:layout_width="41dp"
+                        android:layout_height="7dp"
+                        android:layout_above="@id/screen_dots"
+                        android:layout_alignRight="@+id/screen_dots"
+                        android:layout_marginBottom="2dp"
+                        android:src="@drawable/loc" />
+
+                    <TextView
+                        android:id="@+id/leftdB"
+                        android:layout_width="96dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginBottom="22dp"
+                        android:layout_marginLeft="6dp"
+                        android:gravity="center"
+                        android:text="120db"
+                        android:textColor="#FFAC53"
+                        android:textSize="33sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/rightdB"
+                        android:layout_width="96dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginBottom="22dp"
+                        android:layout_marginRight="6dp"
+                        android:gravity="center"
+                        android:text="120db"
+                        android:textColor="#FFAC53"
+                        android:textSize="33sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/leftDescription"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginLeft="6dp"
+                        android:gravity="center"
+                        android:text="T-rex"
+                        android:textColor="#FFAC53"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/rightDescription"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginRight="6dp"
+                        android:gravity="center"
+                        android:text="T-rex"
+                        android:textColor="#FFAC53"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/separator" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <ViewFlipper
+                    android:id="@+id/inner_listen_view_flipper"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+
+                    <!-- first page in inner flip viewer -->
+
+                    <LinearLayout
+                        android:id="@+id/inner_first_page_view"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="vertical" >
+
+                        <!-- upper side -->
+
+                        <RelativeLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical" >
+
+                            <ImageView
+                                android:id="@+id/widenoise_logo"
+                                android:layout_width="212dp"
+                                android:layout_height="fill_parent"
+                                android:layout_centerHorizontal="true"
+                                android:src="@drawable/widenoise_logo" />
+                        </RelativeLayout>
+                        <!-- separator -->
+
+                        <ImageView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:src="@drawable/separator" />
+                        <!-- lower side -->
+
+                        <RelativeLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical" >
+
+                            <RelativeLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:orientation="vertical" >
+
+                                <Button
+                                    android:id="@+id/take_noise_sample_button"
+                                    android:layout_width="282dp"
+                                    android:layout_height="40dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/take_noise_sample"
+                                    android:onClick="take_noise_sample_callback" />
+                            </RelativeLayout>
+                        </RelativeLayout>
+                    </LinearLayout>
+                    <!-- second page in inner flip viewer -->
+
+                    <LinearLayout
+                        android:id="@+id/inner_second_page_view"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="vertical" >
+
+                        <!-- upper side -->
+
+                        <RelativeLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical" >
+
+                            <RelativeLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:orientation="vertical" >
+
+                                <Button
+                                    android:id="@+id/extend_sampling_button"
+                                    android:layout_width="282dp"
+                                    android:layout_height="40dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/extend_sampling"
+                                    android:onClick="extend_sampling_callback" />
+                            </RelativeLayout>
+                        </RelativeLayout>
+                        <!-- separator -->
+
+                        <ImageView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:src="@drawable/separator" />
+                        <!-- lower side -->
+
+                        <RelativeLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical" >
+
+                            <RelativeLayout
+                                android:layout_width="288dp"
+                                android:layout_height="fill_parent"
+                                android:layout_centerHorizontal="true"
+                                android:layout_centerVertical="true"
+                                android:orientation="horizontal" >
+
+                                <ImageView
+                                    android:id="@+id/led"
+                                    android:layout_width="57dp"
+                                    android:layout_height="40dp"
+                                    android:layout_centerVertical="true"
+                                    android:gravity="left"
+                                    android:src="@drawable/led_2" />
+
+                                <RelativeLayout
+                                    android:layout_width="225dp"
+                                    android:layout_height="32dp"
+                                    android:layout_centerVertical="true"
+                                    android:layout_toRightOf="@id/led"
+                                    android:background="@drawable/scale"
+                                    android:gravity="right"
+                                    android:orientation="vertical" >
+
+                                    <SeekBar
+                                        android:id="@+id/guess_noise_level_seekbar"
+                                        android:layout_width="225dp"
+                                        android:layout_height="32dp"
+                                        android:layout_centerVertical="true"
+                                        android:max="120" 
+                                        android:progressDrawable="@drawable/progress_seek_bar_layout"
+                                        />
+                                </RelativeLayout>
+                            </RelativeLayout>
+                        </RelativeLayout>
+                    </LinearLayout>
+                    <!-- third page in inner flip viewer -->
+
+                    <LinearLayout
+                        android:id="@+id/inner_third_page_view"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="vertical" >
+
+                        <!-- upper side -->
+
+                        <RelativeLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical" >
+
+                            <RelativeLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:orientation="vertical" >
+
+                                <Button
+                                    android:id="@+id/restart_button"
+                                    android:layout_width="282dp"
+                                    android:layout_height="40dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/restart"
+                                    android:onClick="restart_callback" />
+                            </RelativeLayout>
+                        </RelativeLayout>
+                        <!-- separator -->
+
+                        <ImageView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:src="@drawable/separator" />
+                        <!-- lower side -->
+
+                        <RelativeLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical" >
+
+                            <RelativeLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:orientation="vertical" >
+
+                                <Button
+                                    android:id="@+id/qualify_noise_button"
+                                    android:layout_width="282dp"
+                                    android:layout_height="40dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/qualify_noise"
+                                    android:onClick="qualify_noise_callback" />
+                            </RelativeLayout>
+                        </RelativeLayout>
+                    </LinearLayout>
+                </ViewFlipper>
+            </RelativeLayout>
+        </LinearLayout>
+        <!-- second page in main flip viewer -->
+
+        <LinearLayout
+            android:id="@+id/main_second_page_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="282dp"
+                    android:layout_height="fill_parent"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:orientation="vertical" >
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1" >
+
+                        <ImageView
+                            android:id="@+id/qualify_text"
+                            android:layout_width="200dp"
+                            android:layout_height="7dp"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="3dp"
+                            android:layout_marginTop="3dp"
+                            android:src="@drawable/qualify_text" />
+
+                        <LinearLayout
+                            android:id="@+id/noise_type_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:layout_below="@id/qualify_text"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginBottom="3dp"
+                            android:layout_marginTop="3dp"
+                            android:orientation="vertical" >
+
+                            <RelativeLayout
+                                android:id="@+id/love_slider_layout"
+                                android:layout_width="275dp"
+                                android:layout_height="32dp"
+                                android:layout_column="1"
+                                android:layout_marginBottom="0dp"
+                                android:layout_marginLeft="0dp"
+                                android:layout_marginRight="0dp"
+                                android:layout_marginTop="0dp"
+                                android:background="@drawable/love_slider"
+                                android:tag="0" >
+								<SeekBar
+                                    android:id="@+id/love_seekbar"
+                                    android:layout_width="212dp"
+                                    android:layout_height="40dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:max="10"
+                                    android:progress="5" 
+                                    android:progressDrawable="@drawable/double_side_seek_bar"/>
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1" >
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/calm_slider_layout"
+                                android:layout_width="275dp"
+                                android:layout_height="32dp"
+                                android:layout_column="1"
+                                android:layout_marginBottom="0dp"
+                                android:layout_marginLeft="0dp"
+                                android:layout_marginRight="0dp"
+                                android:layout_marginTop="0dp"
+                                android:background="@drawable/calm_slider"
+                                android:tag="2" >
+
+                                <SeekBar
+                                    android:id="@+id/calm_seekbar"
+                                    android:layout_width="212dp"
+                                    android:layout_height="40dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:max="10"
+                                    android:progress="5" 
+                                    android:progressDrawable="@drawable/double_side_seek_bar" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1" >
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/alone_slider_layout"
+                                android:layout_width="275dp"
+                                android:layout_height="32dp"
+                                android:layout_column="1"
+                                android:layout_marginBottom="0dp"
+                                android:layout_marginLeft="0dp"
+                                android:layout_marginRight="0dp"
+                                android:layout_marginTop="0dp"
+                                android:background="@drawable/alone_slider"
+                                android:tag="4" >
+
+                                <SeekBar
+                                    android:id="@+id/alone_seekbar"
+                                    android:layout_width="212dp"
+                                    android:layout_height="40dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:max="10"
+                                    android:progress="5" 
+                                    android:progressDrawable="@drawable/double_side_seek_bar" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1" >
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/nature_slider_layout"
+                                android:layout_width="275dp"
+                                android:layout_height="32dp"
+                                android:layout_column="1"
+                                android:layout_marginBottom="0dp"
+                                android:layout_marginLeft="0dp"
+                                android:layout_marginRight="0dp"
+                                android:layout_marginTop="0dp"
+                                android:background="@drawable/nature_slider"
+                                android:tag="6" >
+
+                                <SeekBar
+                                    android:id="@+id/nature_seekbar"
+                                    android:layout_width="212dp"
+                                    android:layout_height="40dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:max="10"
+                                    android:progress="5" 
+                                    android:progressDrawable="@drawable/double_side_seek_bar" />
+                            </RelativeLayout>
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="54dp" >
+
+                        <ImageView
+                            android:id="@+id/next_label_id"
+                            android:layout_width="25dp"
+                            android:layout_height="6dp"
+                            android:layout_marginBottom="3dp"
+                            android:src="@drawable/next_label" />
+
+                        <Button
+                            android:id="@+id/send_report_button"
+                            android:layout_width="282dp"
+                            android:layout_height="40dp"
+                            android:layout_below="@id/next_label_id"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="2dp"
+                            android:background="@drawable/send_report"
+                            android:onClick="send_report_callback" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
+        <!-- third page in main flip viewer -->
+
+        <LinearLayout
+            android:id="@+id/main_third_page_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" >
+
+                <ImageView
+                    android:id="@+id/status_screen"
+                    android:layout_width="282dp"
+                    android:layout_height="51dp"
+                    android:layout_centerHorizontal="true"
+                    />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" >
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp" >
+
+                <Button
+                    android:id="@+id/add_tag"
+                    android:layout_width="282dp"
+                    android:layout_height="40dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/add_tag"
+                    android:onClick="add_tag_callback" />
+
+                <Button
+                    android:id="@+id/share_result"
+                    android:layout_width="282dp"
+                    android:layout_height="40dp"
+                    android:layout_below="@id/add_tag"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/share_result"
+                    android:onClick="share_result_callback" />
+
+                <Button
+                    android:id="@+id/take_new_sample"
+                    android:layout_width="282dp"
+                    android:layout_height="40dp"
+                    android:layout_below="@id/share_result"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/take_new_sample"
+                    android:onClick="take_new_sample_callback" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ViewFlipper>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/separator" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="35dp"
+        android:layout_gravity="top"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/pager"
+            android:layout_width="88dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/pager_1" />
+    </RelativeLayout>
+
+</LinearLayout>
