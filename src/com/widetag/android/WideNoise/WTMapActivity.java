@@ -10,7 +10,6 @@ import java.util.Iterator;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
@@ -22,7 +21,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
@@ -43,8 +41,7 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
 public class WTMapActivity extends MapActivity {
-	private static final String MAP_KEY = "###MAPS-DEBUG-SECRET-KEY-HERE###"; // DEBUG
-	//private static final String MAP_KEY = "###MAPS-RELEASE-SECRET-KEY-HERE###";  // RELEASE
+	private static final String MAP_KEY = "";
 	
 	
 	static float locationAccuracy = 1000.0f;

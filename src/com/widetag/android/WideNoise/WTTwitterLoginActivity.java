@@ -45,14 +45,10 @@ public class WTTwitterLoginActivity extends Activity
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				// TODO Auto-generated method stub
-				
 			}};
 		userName.addTextChangedListener(textWatcher);
 		password.addTextChangedListener(textWatcher);
@@ -69,15 +65,13 @@ public class WTTwitterLoginActivity extends Activity
 		String passwordText = password.getText().toString();
 		Button thisButton = (Button)view;
 		thisButton.setEnabled(false);
-		boolean logged = WTSocialNetworkManager.getInstance().loginToTwitter(userNameText, passwordText);
-		if (logged)
+		WTSocialNetworkManager snm = WTSocialNetworkManager.getInstance(this);
+		snm.loginToTwitter(userNameText, passwordText);
+		if (snm.isTwitterAuthorized())
 		{
-			// messaggio di successo?
 		}
 		else
 		{
-			//messaggio di errore
-			// ritorno dalla navigazione
 		}
 		finish();
 	}

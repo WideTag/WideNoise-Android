@@ -327,7 +327,7 @@
                                     <SeekBar
                                         android:id="@+id/guess_noise_level_seekbar"
                                         android:layout_width="225dp"
-                                        android:layout_height="32dp"
+                                        android:layout_height="20dp"
                                         android:layout_centerVertical="true"
                                         android:max="120" 
                                         android:progressDrawable="@drawable/progress_seek_bar_layout"
@@ -460,7 +460,7 @@
 								<SeekBar
                                     android:id="@+id/love_seekbar"
                                     android:layout_width="212dp"
-                                    android:layout_height="40dp"
+                                    android:layout_height="20dp"
                                     android:layout_centerHorizontal="true"
                                     android:layout_centerVertical="true"
                                     android:max="10"
@@ -489,7 +489,7 @@
                                 <SeekBar
                                     android:id="@+id/calm_seekbar"
                                     android:layout_width="212dp"
-                                    android:layout_height="40dp"
+                                    android:layout_height="20dp"
                                     android:layout_centerHorizontal="true"
                                     android:layout_centerVertical="true"
                                     android:max="10"
@@ -518,7 +518,7 @@
                                 <SeekBar
                                     android:id="@+id/alone_seekbar"
                                     android:layout_width="212dp"
-                                    android:layout_height="40dp"
+                                    android:layout_height="20dp"
                                     android:layout_centerHorizontal="true"
                                     android:layout_centerVertical="true"
                                     android:max="10"
@@ -547,7 +547,7 @@
                                 <SeekBar
                                     android:id="@+id/nature_seekbar"
                                     android:layout_width="212dp"
-                                    android:layout_height="40dp"
+                                    android:layout_height="20dp"
                                     android:layout_centerHorizontal="true"
                                     android:layout_centerVertical="true"
                                     android:max="10"

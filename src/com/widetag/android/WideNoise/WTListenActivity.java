@@ -1,27 +1,19 @@
 package com.widetag.android.WideNoise;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.facebook.android.Facebook;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -35,25 +27,18 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Button;
-import android.widget.ViewFlipper;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
-
-import twitter4j.AsyncTwitter;
-import twitter4j.StatusUpdate;
-import twitter4j.Twitter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 public class WTListenActivity extends Activity implements WTLedViewDataSource, WTNoiseRecordDelegate, WTTagsViewControllerDelegate
 {
@@ -82,11 +67,9 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 	private WTNoiseRecorder noiseRecorder;	
 	
 	private WTLedView ledView;
-	private ImageView stopView;
 	private RelativeLayout screenGraphContainer;
 	
 	
-	// Interface buttons
 	private Button takeNoiseButton;
 	private Button extendButton;
 	private Button restartButton;
@@ -97,7 +80,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 	private Button shareResult;
 	private Button takeNewSample;
 	
-	// Icons changing during execution
 	private ImageView noiseMeterImage;
 	private ImageView guessTextImage;
 	private ImageView matchTextImage;
@@ -106,14 +88,12 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 	private ImageView locImage;
 	private ImageView statusScreen;
 	
-	// Text labels
 	private TextView leftdbLabel;
 	private TextView rightdbLabel;
 	private TextView leftDescription;
 	private TextView rightDescription;
 	
 	
-	// qualitication noise seekbars
 	private SeekBar loveSeekBar;
 	private SeekBar calmSeekBar;
 	private SeekBar aloneSeekBar;
@@ -134,21 +114,13 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		}
 	}
 	
-	
-	
-	private static int natural_pos = 0, artificial_pos = 1, lovable_pos = 2, hurting_pos = 3, indoor_pos = 4, outdoor_pos = 5, single_pos = 6, multiple_pos = 7; 
-	
-	
-	
-	private boolean noiseTypeButtonFlags[];  // "true" if the button is selected
-	
 	public View.OnClickListener noiseTypeButtonListener = new View.OnClickListener() 
 	{ 
 		public void onClick(View v) 
 		{
 			
 		}
-	}; // it's a variable definition!
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -156,18 +128,12 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listen);
 		
-		// create ledView
 		screenGraphContainer = (RelativeLayout) findViewById(R.id.screen_graph);
 		ledView = new WTLedView(this);
 		
 		Resources r = getResources(); 
 		float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 268, r.getDisplayMetrics());
 		float height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 44, r.getDisplayMetrics());
-		
-		// RECUPERA LA LOCAZIONE CORRENTE E IMPOSTA LA CALLBACK
-		//
-		//	TO DO
-		//
 		
 		currentLocation = new Location("");
 		locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -180,7 +146,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		ledView.setDataSource(this);
 		screenGraphContainer.addView(ledView);
 		
-		// retrieve Button objects from xml
 		takeNoiseButton = (Button) findViewById(R.id.take_noise_sample_button);
 		extendButton = (Button) findViewById(R.id.extend_sampling_button);
 		restartButton = (Button) findViewById(R.id.restart_button);
@@ -191,7 +156,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		shareResult = (Button) findViewById(R.id.share_result);
 		takeNewSample = (Button) findViewById(R.id.take_new_sample);
 		
-		// retrieve ImageView objects from xml
 		noiseMeterImage = (ImageView) findViewById(R.id.noise_meter);
 		guessTextImage = (ImageView) findViewById(R.id.guess_text);
 		matchTextImage = (ImageView) findViewById(R.id.match);
@@ -200,7 +164,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		locImage = (ImageView) findViewById(R.id.loc);
 		statusScreen = (ImageView) findViewById(R.id.status_screen);
 		
-		// rettrieve textView
 		leftdbLabel = (TextView) findViewById(R.id.leftdB);
 		rightdbLabel = (TextView) findViewById(R.id.rightdB);
 		
@@ -228,12 +191,10 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 
 			public void onStartTrackingTouch(SeekBar seekBar) 
 			{
-				// TODO Auto-generated method stub
 			}
 
 			public void onStopTrackingTouch(SeekBar seekBar) 
 			{
-				// TODO Auto-generated method stub
 			}
 		
 		});
@@ -250,17 +211,8 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 	@Override
 	public void onResume()
 	{
-		
-		WTSocialNetworkManager snm = WTSocialNetworkManager.getInstance();
-		
-		if ( snm.isTwitterAuthorized() )
-		{	
-			shareResult.setEnabled(true);
-		}
-		else
-		{
-			shareResult.setEnabled(false);
-		}
+		WTSocialNetworkManager snm = WTSocialNetworkManager.getInstance(this);
+		shareResult.setEnabled(snm.isTwitterAuthorized() || snm.isFacebookAuthorized());
 		super.onResume();
 	}
 	
@@ -271,7 +223,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		switch (page)
 		{
 			case 0:
-			{
 				takeNoiseButton.setEnabled(true);
 				noiseMeterImage.setImageResource(R.drawable.noise_meter_off);
 				stopImage.setVisibility(View.VISIBLE);
@@ -287,38 +238,30 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 				guessNoiseSeekBar.setProgress(0);
 				leftdbLabel.setVisibility(View.GONE);
 				leftDescription.setVisibility(View.GONE);
-			}
-			break;
+				break;
 			case 1:
-			{
 				extendButton.setEnabled(false);
-			}
-			break;
+				break;
 			case 2:
-			{
 				restartButton.setEnabled(true);
 				qualifyNoiseButton.setEnabled(true);
 				stopImage.setVisibility(View.VISIBLE);
 				recImage.setVisibility(View.GONE);
 				locImage.setVisibility(View.VISIBLE);
 				guessTextImage.setVisibility(View.GONE);
-			}
-			break;
+				break;
 			case 3:
-			{
 				loveSeekBar.setProgress(loveSeekBar.getMax() / 2);
 				calmSeekBar.setProgress(loveSeekBar.getMax() / 2);
 				aloneSeekBar.setProgress(loveSeekBar.getMax() / 2);
 				natureSeekBar.setProgress(loveSeekBar.getMax() / 2);
 				sendReportButton.setEnabled(true);
-			}
-			break;
+				break;
 			case 4:
-			{
 				addTag.setEnabled(false);
 				shareResult.setEnabled(false);
 				takeNewSample.setEnabled(false);
-			}
+				break;
 			default:
 				break;
 		}
@@ -388,12 +331,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 			}).create().show();  
 	}
 
-	////////////////////////////////////////////////////////////////////
-	
-	//	Buttons callbacks 
-	
-	////////////////////////////////////////////////////////////////////
-	
 	public void take_noise_sample_callback( View view)
 	{
 		takeNoiseButton.setEnabled(false);
@@ -434,7 +371,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 				{
 					if (location != null) 
 					{
-						// SE LA PRECISIONE è TRA 0 E 100 AGGIORNA
 						WTListenActivity.this.currentLocation
 								.setLatitude(location.getLatitude());
 						WTListenActivity.this.currentLocation
@@ -457,14 +393,11 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 
 				public void onProviderEnabled(String provider) 
 				{
-					// TODO Auto-generated method stub
 				}
 
 				public void onStatusChanged(String provider,
 						int status, Bundle extras) 
 				{
-					// TODO Auto-generated method stub
-
 				}
 
 			});
@@ -478,7 +411,7 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 	public void extend_sampling_callback( View view)
 	{
 		extendButton.setEnabled(false);
-		noiseRecorder.recordForDuration(record_duration);
+		noiseRecorder.record();
 	}
 	
 	public void restart_callback(View view)
@@ -630,7 +563,8 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 						statusScreen.setBackgroundResource(R.drawable.status_screen_done);
 
 						takeNewSample.setEnabled(true);
-						shareResult.setEnabled(true);
+						WTSocialNetworkManager snm = WTSocialNetworkManager.getInstance(WTListenActivity.this);
+						shareResult.setEnabled(snm.isTwitterAuthorized() || snm.isFacebookAuthorized());
 						addTag.setEnabled(true);
 				}});
 			}
@@ -645,7 +579,7 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 
 						takeNewSample.setEnabled(true);
 						shareResult.setEnabled(false);
-						addTag.setEnabled(false);  // PER DEBUGGARE!! RIMETTERE A FALSE!!
+						addTag.setEnabled(false);
 				}});
 			}
 		}
@@ -657,7 +591,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 	public void change_prediction_callback(View view)
 	{
 		Integer db = new Integer(((SeekBar)view).getProgress());
-		String description = new String();
 		ImgAndDescription iad = getNoiseDescriptionAndImage(db.floatValue());
 		
 		leftdbLabel.setText(db.toString() + "db");
@@ -671,7 +604,7 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		but.setEnabled(false);
 
 		Intent intent = new Intent(this, WTTagActivity.class);
-		WTListenActivity.this.startActivityForResult(intent, REQUEST_TAG);  // change into startActivityForResult
+		WTListenActivity.this.startActivityForResult(intent, REQUEST_TAG);
 	}
 	
 	@Override
@@ -689,7 +622,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 				else
 				{
 					final boolean shareIsEnabled = shareResult.isEnabled();
-					final WTNoise recordedNoise = noiseRecorder.getRecordedNoise();
 					
 					class TagAsyncTask extends AsyncTask<WTListenActivity, Void, Void>
 					{
@@ -754,6 +686,7 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 						}
 					}
 					statusScreen.setBackgroundResource(R.drawable.status_screen_sending);
+			
 					TagAsyncTask srat = new TagAsyncTask();
 					srat.execute(this);
 				}
@@ -766,11 +699,12 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		Button but = (Button)view;
 		but.setEnabled(false);
 
-		WTSocialNetworkManager snm = WTSocialNetworkManager.getInstance();
+		WTSocialNetworkManager snm = WTSocialNetworkManager.getInstance(this);
 		boolean twitterOk = snm.isTwitterAuthorized();
-		boolean facebookOk = false; // SocialNetworkManager.getInstance().isfacebookAuthorized();
+		boolean facebookOk = snm.isFacebookAuthorized();
 		if ( twitterOk || facebookOk )
 		{
+			statusScreen.setBackgroundResource(R.drawable.status_screen_sending);
 			WTNoise recordedNoise = noiseRecorder.getRecordedNoise();
 			String link = String.format(SOCIAL_URL, recordedNoise.getID());
 			String description = String.format(SOCIAL_MSG, recordedNoise.getAverageLevelInDB(), recordedNoise.getDescription());
@@ -779,35 +713,21 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 				String updateString = String.format("%s %s",description, link);
 				snm.updateTwitterStatus(updateString);
 			}
-			Facebook facebook = snm.getFacebook();
-			if (facebook.isSessionValid())
+			if (facebookOk)
 			{
-				//String response = facebook.request("me/feed");
 				Bundle parameters = new Bundle();
 				parameters.putString("link", link);
 				parameters.putString("description", description);
-				try 
-				{
-					String response = facebook.request("me/feed", parameters, "POST");
-				} 
-				catch (FileNotFoundException e) 
-				{
-					e.printStackTrace();
-				} catch (MalformedURLException e) 
-				{
-					e.printStackTrace();
-				} catch (IOException e) 
-				{
-					e.printStackTrace();
-				}
+				snm.sendFacebook(parameters);
 			}
+			statusScreen.setBackgroundResource(R.drawable.status_screen_done);
 		}
 		else
 		{
 			handleConnectionError("Please log in to one or more social networks first");
 		}
 	}
-	
+
 	public void take_new_sample_callback(View view)
 	{
 		noiseRecorder.clear();
@@ -823,13 +743,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 
 	}
 	
-	////////////////////////////////////////////////////////////////////
-	
-	//   Animation functions
-	
-	////////////////////////////////////////////////////////////////////
-	
-	// for the next movement
 	public static Animation inFromRightAnimation(int duration) 
 	{
 
@@ -853,7 +766,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
     	return outtoLeft;
     }
     
-    // for the previous movement
     public static Animation inFromLeftAnimation(int duration) 
     {
     	Animation inFromLeft = new TranslateAnimation(
@@ -877,7 +789,6 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
     }
     
     
-    // listener for first animation to postpone noise recording: otherwise animation is spoiled 
     Animation.AnimationListener from0to1 = new Animation.AnimationListener()
     {
 
@@ -889,20 +800,16 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 			locImage.setVisibility(View.VISIBLE);
 			guessTextImage.setVisibility(View.VISIBLE);
 			matchTextImage.setVisibility(View.GONE);
-			// Start recording
-			noiseRecorder.recordForDuration(record_duration);
+			noiseRecorder.resetRecordVars();
+			noiseRecorder.record();
 		}
 
 		public void onAnimationRepeat(Animation animation) 
 		{
-			// TODO Auto-generated method stub
-			
 		}
 
 		public void onAnimationStart(Animation animation) 
 		{
-			// TODO Auto-generated method stub
-			
 		}
     	
     };
@@ -916,27 +823,17 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		
 		}
 		public void onAnimationRepeat(Animation arg0) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		public void onAnimationStart(Animation animation) {
-			// TODO Auto-generated method stub
-			
 		}
     }; 
     
-	////////////////////////////////////////////////////////////////////
-	
-	//   WTLedViewDataSource
-	
-	////////////////////////////////////////////////////////////////////    
-
 	public float ledViewValue(WTLedView ledView, int columnIndex) 
 	{
 		WTNoise noise = this.noiseRecorder.getRecordedNoise();
-		int samplesPerSecond = this.noiseRecorder.resamplingNumOfSamples;
-		double currentRecDur = noise.getMeasurementDuration();
+		int samplesPerSecond = WTNoiseRecorder.resamplingNumOfSamples;
+		double currentRecDur = this.noiseRecorder.getTotalDuration();
 		int totalSamples = (int)(samplesPerSecond  * currentRecDur);
 		
 		if (totalSamples == 0)
@@ -944,7 +841,7 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 			return 0;
 		}
 		float numOfCols = ((float) (ledView.getNumberOfCols()));
-		float len = totalSamples / numOfCols ;
+		float len = totalSamples / numOfCols;
 		
 		float level = 0.0f;
 		
@@ -978,16 +875,9 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		{
 			value = 1.0f;
 		}
-		
 		return value;
 	}
 
-	////////////////////////////////////////////////////////////////////
-	
-	//   WTNoiseRecordDelegate
-	
-	////////////////////////////////////////////////////////////////////    
-	
 	protected ImgAndDescription getNoiseDescriptionAndImage(float db)
 	{
 		ImgAndDescription result = new ImgAndDescription();
@@ -1035,25 +925,16 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 		return result;
 	}
 	
-	////////////////////////////////////////////////////////////////////
-	
-	//   WTNoiseRecordDelegate
-	
-	////////////////////////////////////////////////////////////////////    
-		
 	public void hasFinishedRecording(WTNoiseRecorder recorder) 
 	{
 		WTNoise recordedNoise = noiseRecorder.getRecordedNoise();
-		//recordedNoise.setMeasurementDuration(noiseRecorder.getTotalDuration());
 		
 		ViewFlipper vf = (ViewFlipper) findViewById(R.id.inner_listen_view_flipper);
 		flipToNextView(vf);
 		setPage(2);
 		
 		final float db = recordedNoise.getAverageLevelInDB();
-		String description = new String();
 		 
-		Integer num = new Integer(0);
 		ImgAndDescription iad = getNoiseDescriptionAndImage(db);
 		final Integer imageNum = new Integer(iad.img) ;
 		final String passingDescrption = iad.description;
@@ -1087,21 +968,24 @@ public class WTListenActivity extends Activity implements WTLedViewDataSource, W
 
 	public void noiseUpdated(int numOfRecordedSamples, final WTNoise noise) 
 	{
-		if (noise.getSamples().size() > (noiseRecorder.getCurrentRecordingDuration() * noiseRecorder.resamplingNumOfSamples / 2))
+		this.runOnUiThread(new Runnable() 
 		{
-			this.runOnUiThread(new Runnable() 
+			public void run() 
 			{
-				public void run() 
-				{
-					WTListenActivity.this.extendButton.setEnabled(true);
-					WTListenActivity.this.extendButton.setClickable(true);
-					WTListenActivity.this.ledView.invalidate();
-				}
-			});
-		}
+				WTListenActivity.this.ledView.invalidate();
+				boolean enable = noiseRecorder.canEnqueueMoreBuffers(); 
+				WTListenActivity.this.extendButton.setEnabled(enable);
+				WTListenActivity.this.extendButton.setClickable(enable);
+			}
+		});
 	}
 	
 	protected void shareToSocialNetworks()
+	{
+
+	}
+
+	public void halfPeriodReached() 
 	{
 
 	}

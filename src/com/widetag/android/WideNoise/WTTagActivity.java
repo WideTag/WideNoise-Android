@@ -1,26 +1,18 @@
 package com.widetag.android.WideNoise;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.method.KeyListener;
-import android.text.method.TextKeyListener;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -55,12 +47,10 @@ public class WTTagActivity extends Activity
 				selectedImgView.setBackgroundDrawable(getResources().getDrawable(R.drawable.checkmark));
 				selected = true;
 				int bckndColor = Color.rgb(255, 236, 215);
-				//this.setBackgroundColor(bckndColor);
 				tableRow.setBackgroundColor(bckndColor);
 			}
 			else
 			{
-				//setBackgroundColor(Color.WHITE);
 				tableRow.setBackgroundColor(Color.WHITE);
 				this.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
 				selectedImgView.setBackgroundDrawable(null);
@@ -82,7 +72,6 @@ public class WTTagActivity extends Activity
 	private ArrayList<String> localCopyOfStoredTags;
 	private EditText newTagEditText;
 	private TableLayout table;
-	private Button addTagButton;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -91,14 +80,13 @@ public class WTTagActivity extends Activity
 		setContentView(R.layout.tag);
 		newTagEditText = (EditText) findViewById(R.id.new_tag_generator);
 		table = (TableLayout) findViewById(R.id.tag_table);
-		addTagButton = (Button) findViewById(R.id.add_tag_button);
 
-		localCopyOfStoredTags = WTTagsManager.getInstance(this).getStoreTags();
+		localCopyOfStoredTags = WTTagsManager.getInstance(this).getStoredTags();
 		tagTextList = new ArrayList<ClickableText>();
 
 		for (int i = 0; i < localCopyOfStoredTags.size(); i++)
 		{
-			AddRow(i + 1,localCopyOfStoredTags.get(i) );
+			AddRow(i ,localCopyOfStoredTags.get(i) );
 		}
 		
 	}
@@ -132,8 +120,6 @@ public class WTTagActivity extends Activity
 		}
 		WTTagsManager.getInstance(this).setSelectedTags(selectedTags);
 		
-		
-		
 		setResult(RESULT_OK);
 		finish();
 	}
@@ -148,9 +134,7 @@ public class WTTagActivity extends Activity
 			{
 				WTTagsManager.getInstance(this).addTagToStore(textToInsert);
 				
-				localCopyOfStoredTags.add(textToInsert);
-
-				AddRow(1,newTagEditText.getText().toString());
+				AddRow(0,newTagEditText.getText().toString());
 				newTagEditText.setText("");
 			}
 		}
@@ -189,7 +173,6 @@ public class WTTagActivity extends Activity
 		dummyImg.setLayoutParams(dummyParams);
 		
 		int checkDim = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20 , r.getDisplayMetrics());
-		LayoutParams params = new LayoutParams(checkDim, checkDim);
 		
 		int borderSize = (trHeight - checkDim)/2;
 		img.layout(borderSize , borderSize,trHeight - borderSize , trHeight - borderSize);

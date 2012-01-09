@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -23,17 +22,13 @@ public class WTTagsManager
 	private static WTTagsManager instance;
 	
 	
-	private WTTagsManager()
+	private WTTagsManager(Context context)
 	{
 		super();
+		appContext = context;
 		selectedTags = new ArrayList<String> ();
 		storedTags = new ArrayList<String> ();
-	}
 	
-	private WTTagsManager setAppContext(Context context)
-	{
-		appContext = context;
-		return this;
 	}
 	
 	synchronized public void setSelectedTags(ArrayList<String> tags)
@@ -63,7 +58,7 @@ public class WTTagsManager
 		return selectedTags;
 	}
 	
-	synchronized public ArrayList<String> getStoreTags()
+	synchronized public ArrayList<String> getStoredTags()
 	{
 		return storedTags;
 	}
@@ -72,8 +67,7 @@ public class WTTagsManager
 	{
 		if (instance == null)
 		{
-			instance = new WTTagsManager();
-			instance.setAppContext( context.getApplicationContext());
+			instance = new WTTagsManager(context.getApplicationContext());
 			instance.readStoredTags();
 		}
 		return instance;
@@ -112,13 +106,7 @@ public class WTTagsManager
 		try 
 		{
 			FileInputStream fis = appContext.openFileInput(STORED_TAGS_FILE_NAME);
-			if (fis == null)
-			{
-//				FileOutputStream fOut = appContext.openFileOutput(STORED_TAGS_FILE_NAME, 
-//                        Context.MODE_PRIVATE);
-//				fOut.close();
-			}
-			else
+			if (fis != null)
 			{
 				InputStreamReader isr = new InputStreamReader(fis);
 				BufferedReader buffer = new BufferedReader(isr);
@@ -145,7 +133,7 @@ public class WTTagsManager
 				}
 				while(singleTag != null);
 				
-				if (!readTags.isEmpty())
+				if (readTags.size() > 0)
 				{
 					storedTags = null;
 					storedTags = readTags;
@@ -169,8 +157,6 @@ public class WTTagsManager
 		}
 		catch (Exception ee)
 		{
-			int i = 0;
-			int j = i;
 		}
 		
 		return true;

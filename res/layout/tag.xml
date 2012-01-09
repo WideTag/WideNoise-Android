@@ -42,23 +42,41 @@
 			
 	        android:layout_marginRight="5dp"/>
 	</RelativeLayout>
-	<TableLayout
+	
+	<LinearLayout
 	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:stretchColumns="0"
-	    android:layout_marginTop="10dp"
-	    android:id="@+id/tag_table">
-		<TableRow >
-	    	<EditText
-	    	    android:id="@+id/new_tag_generator"
-	    	    android:layout_width="fill_parent"
-	    	    android:singleLine="true"
-	    	    />
-	    	<Button 
-	    	    android:id="@+id/add_tag_button"
-	    	    android:width="50dp"
-	    	    android:text="Add"
-	    	    android:onClick="add_tag_button_callback"/>"
-		</TableRow>
-	</TableLayout>
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    >
+	   <EditText
+    	    android:id="@+id/new_tag_generator"
+    	    android:layout_width="fill_parent"
+    	    android:singleLine="true"
+    	    android:layout_height="50dp"
+    	    android:layout_weight="1"
+		    />
+	    <Button 
+    	    android:id="@+id/add_tag_button"
+    	    android:layout_width="50dp"
+    	    android:layout_height="50dp"
+    	    android:text="Add"
+    	    android:onClick="add_tag_button_callback"
+		    />
+	    
+	</LinearLayout>
+	 
+	<ScrollView 
+	    android:fillViewport="false"
+	    android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<TableLayout
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"
+		    android:stretchColumns="0"
+		    android:layout_marginTop="10dp"
+		    android:background="#000000"
+		    android:id="@+id/tag_table">
+
+		</TableLayout>
+	</ScrollView>
 </LinearLayout>

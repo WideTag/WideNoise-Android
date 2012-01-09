@@ -2,22 +2,17 @@ package com.widetag.android.WideNoise;
 
 
 
+import twitter4j.Twitter;
 import android.app.TabActivity;
-import android.os.Bundle;
-import android.widget.TabHost;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.auth.AccessToken;
-import twitter4j.conf.*;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TabHost;
 
 public class WTWideNoiseActivity extends TabActivity {
-    /** Called when the activity is first created. */
-    
 	private Twitter twitter;
 	
 	@Override
@@ -27,7 +22,6 @@ public class WTWideNoiseActivity extends TabActivity {
         TabHost tabHost = getTabHost();
         TabHost.TabSpec spec;
         Intent intent;
-        //tabHost.setup();
         Resources res = getResources(); 
         
         intent = new Intent().setClass(this, WTListenActivity.class);
@@ -40,33 +34,63 @@ public class WTWideNoiseActivity extends TabActivity {
         intent = new Intent().setClass(this, WTMapActivity.class);
         Drawable mapIcon = res.getDrawable(R.drawable.ic_tab_map);
         spec = tabHost.newTabSpec("mapActivity").setIndicator("Map", mapIcon).setContent(intent);
-        //tabHost.getTabWidget().getChildAt(0).setBackgroundResource(Color.GREEN); 
-        //spec = tabHost.newTabSpec("mapActivity").setIndicator("Map", null).setContent(intent);
         tabHost.addTab(spec);
         
         intent = new Intent().setClass(this, WTShareActivity.class);
         Drawable shareIcon =  res.getDrawable(R.drawable.ic_tab_share);
         spec = tabHost.newTabSpec("shareActivity").setIndicator("Share", shareIcon).setContent(intent);
-        //spec = tabHost.newTabSpec("shareActivity").setIndicator("Share", null).setContent(intent);
         tabHost.addTab(spec);
         Drawable aboutIcon =  res.getDrawable(R.drawable.ic_tab_about);
         spec = tabHost.newTabSpec("about").setIndicator("About", aboutIcon).setContent(R.id.tabview4);
-        //spec = tabHost.newTabSpec("about").setIndicator("About", null).setContent(R.id.tabview4);
         tabHost.addTab(spec);
         
         tabHost.setCurrentTab(0);
-        
-
-		/*
-		System.out.println("Access Token " +token );       
-        String name = token.getScreenName();      
-        System.out.println("Screen Name" +name);       
-        System.out.println(token); 
-	*/
     }
     
     public Twitter getTwitter()
     {
     	 return twitter;
+    }
+    
+    public void aboutWidetagClick(View v) {
+    	Uri uri = Uri.parse("http://www.widetag.com");
+    	Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    	startActivity(intent);
+    }
+    
+    public void aboutEveryAwareClick(View v) {
+    	Uri uri = Uri.parse("http://www.everyaware.eu/");
+    	Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    	startActivity(intent);
+    }
+    
+    public void aboutISIClick(View v) {
+    	Uri uri = Uri.parse("http://http://www.isi.it/");
+    	Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    	startActivity(intent);
+    }
+    
+    public void aboutSapUniClick(View v) {
+    	Uri uri = Uri.parse("http://www.phys.uniroma1.it/DipWeb/home.html");
+    	Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    	startActivity(intent);
+    }
+    
+    public void aboutCSPClick(View v) {
+    	Uri uri = Uri.parse("http://www.csp.it/");
+    	Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    	startActivity(intent);
+    }
+    
+    public void aboutL3SClick(View v) {
+    	Uri uri = Uri.parse("http://www.everyaware.eu/consortium/l3s-research-center/");
+    	Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    	startActivity(intent);
+    }
+    
+    public void aboutCodemachineClick(View v) {
+    	Uri uri = Uri.parse("http://www.codemachine.it");
+    	Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    	startActivity(intent);
     }
 } 

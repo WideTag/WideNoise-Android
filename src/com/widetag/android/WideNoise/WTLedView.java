@@ -23,8 +23,6 @@ public class WTLedView extends View
 	public WTLedView(Context context) 
 	{
 		super(context);
-		// TODO Auto-generated constructor stub
-
 		ledColor = Color.rgb(255, 172, 83);
 	
 	}
@@ -43,13 +41,12 @@ public class WTLedView extends View
 		paint.setPathEffect(dashPath);
 		paint.setColor(ledColor);
 		int height = getHeight();
-		int width = getWidth();
 		if (dataSource != null)
 		{
 			for (int i = 0; i < getNumberOfCols(); i++)
 			{
 				float value = dataSource.ledViewValue(this, i); 
-				canvas.drawLine(col_width * i,height,col_width * i,height - col_width* (int)(getNumberOfRows() * value),paint);
+				canvas.drawLine(col_width * i, height, col_width * i, height - col_width * (int) (getNumberOfRows() * value), paint);
 			}
 		}
 	}

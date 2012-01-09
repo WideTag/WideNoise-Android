@@ -7,9 +7,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
-import com.google.android.maps.OverlayItem;
-
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 
 public class WTNoise
@@ -27,7 +24,7 @@ public class WTNoise
 	private Location location;
 	private Date measurementDate;
 	private double measurementDuration;
-	float averageLevelInDB ;
+	float averageLevelInDB;
 
 	private float lookUpTable[][] = 
 		{
@@ -196,9 +193,6 @@ public class WTNoise
 		samples.add(level);
 	}
 
-	// public float getRawSampleAtIndex(int index) 
-	// {}
-	
 	public Integer hash()
 	{
 		int prime = 31;
@@ -214,7 +208,7 @@ public class WTNoise
 	
 	public void setDisturbanceLevel(float level)
 	{
-		perceptions.put("distrubance", level / 10.0f);
+		perceptions.put("disturbance", level / 10.0f);
 	}
 	
 	public void setIsolationLevel(float level)
@@ -224,7 +218,7 @@ public class WTNoise
 	
 	public void setArtificiality(float level)
 	{
-		perceptions.put("aritificality", level / 10.0f);
+		perceptions.put("artificiality", level / 10.0f);
 	}
 
 	public void setID(String newID)
@@ -236,9 +230,6 @@ public class WTNoise
 		assert samples.isEmpty();
 		averageLevelInDB = value;
 	}
-	
-	//////////////////////////////////////////////////////
-	
 	
 	public String getTitle()
 	{

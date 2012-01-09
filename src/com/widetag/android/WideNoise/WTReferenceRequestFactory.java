@@ -1,42 +1,27 @@
 package com.widetag.android.WideNoise;
 
-import java.io.StringBufferInputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import android.telephony.TelephonyManager;
-import android.util.Base64;
-import android.util.Base64OutputStream;
-import android.util.Log;
-
 import java.util.Date;
 import java.util.Formatter;
-import java.util.List;
 import java.util.Locale;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import android.content.Context;
-import android.app.Activity;
-import android.provider.Settings.Secure; 
-import org.apache.http.NameValuePair;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.provider.Settings.Secure;
-import org.apache.http.HttpResponse;
+import android.content.Context;
+import android.telephony.TelephonyManager;
+import android.util.Base64;
+import android.util.Log;
 
 
 public class WTReferenceRequestFactory implements WTRequestFactory
@@ -45,12 +30,8 @@ public class WTReferenceRequestFactory implements WTRequestFactory
 	private final static String TAGS_URL = "http://www.widetag.com/widenoise/v2/api/noise/%s/tag/";
 	private final static String REPORTING_URL = "http://www.widetag.com/widenoise/v2/api/noise/";
 	private final static String MAP_URL = "http://www.widetag.com/widenoise/v2/api/noise/";
-	private final static String KEY = "###API-SECRET-KEY-HERE###";
-	private WTReferenceRequestFactory()
-	{
-		// cannot be called from outside
-	}
-	
+	private final static String KEY = "";
+
 	public WTReferenceRequestFactory(Context context)
 	{
 		this.context = context; 
@@ -86,8 +67,8 @@ public class WTReferenceRequestFactory implements WTRequestFactory
 			}
 			jobj.put("perceptions", perceptions);
 			
-			int numOfSamples = noise.getSamples().size(); // debug
-			double duration = noise.getMeasurementDuration(); // debug
+			int numOfSamples = noise.getSamples().size(); 
+			double duration = noise.getMeasurementDuration(); 
 			int interval = (int) (numOfSamples / (2 * duration));
 			ArrayList<String> samples = new ArrayList<String>();
 			int i = 0;

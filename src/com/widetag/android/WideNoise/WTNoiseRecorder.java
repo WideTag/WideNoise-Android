@@ -1,191 +1,134 @@
 package com.widetag.android.WideNoise;
 
-import java.util.ArrayList;
-
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
 public class WTNoiseRecorder 
 {
-	final int samples_per_packet = 256; 
+	final static int samples_per_packet = 256; 
 	
-	private double recordingDuration;
 	private WTNoise recordedNoise;
 	private WTNoiseRecordDelegate delegate;
 	private AudioRecord audioRecorder;
 	public static int samplingRate = 8000;
-	public static int maxNumOfRecords = 3;
-	public static int maxDuration = 5;
-	public static int bufferDim = samplingRate * maxDuration * maxNumOfRecords;
+	private final static int maxNumOfRecords = 3;
+	private final static int recordDuration = 5;
+	private final static int maxDuration = recordDuration*maxNumOfRecords;
+	public static int bufferDim = samplingRate * maxDuration;
 	public static int resamplingNumOfSamples = 20;
 	private short buffer[];
 	private double buffer_rms[];
 	private int buffer_rms_position;
 	
-	private double listOfDuration[];
 	private int currentRecord;
-	private int lastAddedRecord;
 	private int numOfRecordedIntervals;
-	
-	private int numOfRecordToComplete = 0;
-	
-	private Thread thread;
-	
-	private int tableSize = 14;
-	
-	private WTNoiseRecorder()
-	{
-		// NOT ALLOWED
-	}
-	
+	private int totalRecords;
+	private int lastEnqueued;
+
 	private int getNumOfRecordedSamples()
 	{
 		return (int)((double)(numOfRecordedIntervals) * (double)samplingRate / resamplingNumOfSamples);
 	}
 	
 	
-	private int numberOfSamples()
+	public void resetRecordVars()
 	{
-		return (int)(recordingDuration * resamplingNumOfSamples);
-	}
-	
-	private void resetRecordVars()
-	{
-		listOfDuration = null;
-		currentRecord = -1;
-		lastAddedRecord = -1;
+		
 		numOfRecordedIntervals = 0;
+		totalRecords = 0;
+		lastEnqueued = 0;
 	}
 	
 	public WTNoiseRecorder(WTNoiseRecordDelegate newDelegate)
 	{
-		//
 		audioRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC, samplingRate,AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferDim * 2 );
-		//audioRecorder = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, samplingRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, buffersizebytes );
 		buffer = new short[bufferDim];
 		buffer_rms = new double[(bufferDim+	samples_per_packet-1)/samples_per_packet];
 		buffer_rms_position = 0;
 		delegate = newDelegate;
 		recordedNoise = new WTNoise();
+		
+		numOfRecordedIntervals = 0;
+		totalRecords = 0;
+		lastEnqueued = 0;
+
 		resetRecordVars();
 		audioRecorder.setRecordPositionUpdateListener(new AudioRecord.OnRecordPositionUpdateListener() 
 		{
 
 			public void onPeriodicNotification(AudioRecord ar)
 			{
-				WTNoiseRecorder.this.numOfRecordedIntervals++;
+				numOfRecordedIntervals++;
 
-				if (ar.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING)
-				{
-					//float level = (float) Math.pow(10.0, 0.05*WTNoiseRecorder.this.averagePowerForChannel());
-					float level = (float) WTNoiseRecorder.this.averagePowerForChannel();
-					WTNoiseRecorder.this.getRecordedNoise().addSample(level);
-					WTNoiseRecorder.this.delegate.noiseUpdated(WTNoiseRecorder.this.getNumOfRecordedSamples(), recordedNoise);
-				}
-				else
-				{
-					WTNoiseRecorder.this.audioRecorder.stop();
-					WTNoiseRecorder.this.resetRecordVars();
-				}
+				float level = (float)averagePowerForChannel();
+				getRecordedNoise().addSample(level);
+				delegate.noiseUpdated(getNumOfRecordedSamples(), recordedNoise);
 			}
 			
 			public void onMarkerReached(AudioRecord ar)
 			{
-				if (WTNoiseRecorder.this.currentRecord >= WTNoiseRecorder.this.lastAddedRecord)
+				currentRecord++;
+				if (currentRecord == totalRecords)
 				{
-					//double md = WTNoiseRecorder.this.recordedNoise.getMeasurementDuration();
-					//int index = WTNoiseRecorder.this.currentRecord;
-					//WTNoiseRecorder.this.recordedNoise.setMeasurementDuration(md + WTNoiseRecorder.this.listOfDuration[index]);
-					WTNoiseRecorder.this.audioRecorder.stop();
-					WTNoiseRecorder.this.currentRecord = -1;
-					WTNoiseRecorder.this.delegate.hasFinishedRecording(WTNoiseRecorder.this);
-					
+					audioRecorder.stop();
+					delegate.hasFinishedRecording(WTNoiseRecorder.this);
 				}
 				else
 				{
-					currentRecord++;
-					WTNoiseRecorder.this.audioRecorder.setNotificationMarkerPosition((int)(WTNoiseRecorder.this.listOfDuration[currentRecord] * samplingRate));
+					final int lastEnqueuedPosition = lastEnqueued*recordDuration*samplingRate;
+					final int samples = recordDuration * samplingRate;
+					int nextEnqueuedPosition = lastEnqueuedPosition + samples;
+					audioRecorder.setNotificationMarkerPosition(nextEnqueuedPosition);
+					audioRecorder.setPositionNotificationPeriod( samplingRate / resamplingNumOfSamples );
+					audioRecorder.startRecording();
+					new Thread(new Runnable() 
+					{         
+						public void run() 
+						{ 
+							audioRecorder.read(buffer, lastEnqueuedPosition, samples);
+						}
+					}).start();
+					
+					lastEnqueued++;
 				}
 			}
 		});
 	}
 	
-	public boolean recordForDuration(double duration)
+	synchronized public boolean record()
 	{
-		if (duration <= 0)
+		if (totalRecords == 0)
 		{
-			return false;
-		}
-		
-		if (duration > maxDuration)
-		{	
-			duration = maxDuration;
-		}
-		
-		if (lastAddedRecord == maxNumOfRecords) // too many records
-		{
-			return false;
-		}
-		
-		
-		//if (audioRecorder.getState() == AudioRecord.RECORDSTATE_STOPPED) // this is the first record
-		if (listOfDuration == null)
-		{
-			lastAddedRecord = -1;
-			listOfDuration = new double[maxNumOfRecords];
+			
 			currentRecord = 0;
-			listOfDuration[0] = duration;
-			lastAddedRecord = 0;
+			lastEnqueued = 1;
 			buffer_rms_position = 0;
 			audioRecorder.setPositionNotificationPeriod( samplingRate / resamplingNumOfSamples );
-			audioRecorder.setNotificationMarkerPosition((int)(duration * samplingRate));
+			audioRecorder.setNotificationMarkerPosition(recordDuration * samplingRate);
 			numOfRecordedIntervals = 0;
 			
+			audioRecorder.startRecording();
 			
-			thread = new Thread(new Runnable() 
-				{         
-					public void run() 
-					{   
-						int addedRead = 0;
-						audioRecorder.startRecording();
-						audioRecorder.read(buffer,0,(int)(WTNoiseRecorder.this.listOfDuration[0] * samplingRate ));
-						
-						while(audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) 
-						{
-							if (lastAddedRecord > addedRead)
-							{
-								double totalDuration = 0;
-								for (int i = 0; i < addedRead; i++)
-								{
-									totalDuration = WTNoiseRecorder.this.listOfDuration[i];
-								}
-								addedRead++;
-								audioRecorder.read(buffer,(int)(totalDuration * samplingRate),(int)(WTNoiseRecorder.this.listOfDuration[currentRecord] * samplingRate));
-							}
-						}
-					}     
-				});
-			thread.start(); 
-		}
-		else
-		{
-			listOfDuration[++lastAddedRecord] = duration;
+			new Thread(new Runnable() 
+			{         
+				public void run() 
+				{ 
+					audioRecorder.read(buffer,0, recordDuration * samplingRate);
+				}
+			}).start();
 			
 		}
+		
+		totalRecords++;
+		
 		recordedNoise.setMeasurementDuration(this.getTotalDuration());
 		
-		if (audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING)
-		{
-			return true;
-		}
-		
-		return false;
+		return (audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING);
 	}
 	
 	public void stop()
 	{
-		// useless in android: recording duration is established before starting recording
 	}
 	
 	public void clear()
@@ -201,13 +144,9 @@ public class WTNoiseRecorder
 		return recordedNoise;
 	}
 	
-	public double getCurrentRecordingDuration()
+	synchronized public double getTotalDuration()
 	{
-		if ((listOfDuration == null) || (currentRecord < 0))
-		{
-			return 0;
-		}
-		return listOfDuration[currentRecord];
+		return totalRecords*recordDuration;
 	}
 	
 	
@@ -238,27 +177,15 @@ public class WTNoiseRecorder
 		buffer_rms_position = buffer_rms_end_packet;
 		
 		double amount = buffer_rms[0];
-//		int start_packet = Math.max(0, buffer_rms_end_packet-32);
 		for(int i = 1; i < buffer_rms_end_packet; i++)
 		{
 			amount = amount*0.9 + buffer_rms[i]*0.1;
 		}
-//		if (start_packet != buffer_rms_end_packet)
-//		{
-//			return (float)Math.pow(10.0, (amount_db/(buffer_rms_end_packet - start_packet)-120.0)/20.0);
-//		}
-		//return (float)((amount>0.0)?20.0*Math.log(amount):-160.0);
 		return (float)amount;
 	}
 	
-	public double getTotalDuration()
-	{
-		double duration = 0;
-		for (int i = 0; i <=lastAddedRecord; i++)
-		{
-			duration += listOfDuration[i];
-		}
-		return duration;
+	public boolean canEnqueueMoreBuffers() {
+		return totalRecords < maxNumOfRecords;
 	}
 	
 }
